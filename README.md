@@ -1,7 +1,7 @@
 # Financial Forecasting Model
 
 ## Overview
-This project implements a financial forecasting model using Long Short-Term Memory (LSTM) Recurrent Neural Networks to predict stock prices. The model is deployed through a Streamlit web application that provides an interactive interface for viewing stock information and forecasts.
+This project implements a financial forecasting model using Long Short-Term Memory (LSTM) Recurrent Neural Networks to forecast stock prices. LSTM proved the most accurate compared to Random Forest and Naive Bayes. The model is deployed through a Streamlit web application that provides an interactive interface for viewing stock information and forecasts.
 
 ## Features
 - Real-time stock data fetching using Yahoo Finance API
