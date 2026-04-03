@@ -26,7 +26,7 @@ selected = option_menu(
 	orientation = "horizontal",)
 
 if selected == "Stock Forecast":
-	model = load_model('C:\\Users\\jerem\\OneDrive\\Desktop\\sav2\\Stock Predictions Model.keras')
+	model = load_model('')
 
 	st.header('Stock Forecast')
 
