@@ -5,8 +5,8 @@ import streamlit_authenticator as stauth
 import pickle 
 
 names = ["Administrator", "Jeremy Omwenga"]
-emails = ["admin1@gmail.com", "jeremyangwenyi.ja@gmail.com"]
-usernames = ["admin", "jeremy1234"]
+emails = ["", ""]
+usernames = ["", ""]
 
 # Load hashed passwords
 file_path = Path(__file__).parent / "hashed_pw.pkl"
