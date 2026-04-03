@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from sklearn.preprocessing import MinMaxScaler 
 
 
-model = load_model('C:\\Users\\jerem\\OneDrive\\Desktop\\sav2\\Stock Predictions Model.keras')
+model = load_model('')
 
 st.header('Stock Price Predictor')
 
