@@ -20,7 +20,7 @@ This project implements a financial forecasting model using Long Short-Term Memo
 - **Data Visualization**: Plotly
 - **Web Application**: Streamlit
 - **Stock Data**: yfinance
-- **Version Control**: Git
+
 
 ## Installation
 
