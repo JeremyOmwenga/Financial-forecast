@@ -26,14 +26,14 @@ This project implements a financial forecasting model using Long Short-Term Memo
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/JeremyOmwenga/Financial-forecasting.git
-cd financial-forecasting
+git clone https://github.com/JeremyOmwenga/Financial-forecast.git
+cd financial-forecast
 ```
 
 2. Create and activate a virtual environment:
 ```bash
 python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+source venv/bin/activate  # On Windows: venv\Scripts\Activate.ps1
 ```
 
 3. Install required packages:
