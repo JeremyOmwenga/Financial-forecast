@@ -14,7 +14,7 @@ This project implements a financial forecasting model using Long Short-Term Memo
 - Performance metrics dashboard
 
 ## Tech Stack
-- **Python 3.8+**
+- **Python 3.11+**
 - **Deep Learning**: TensorFlow, Keras
 - **Data Processing**: Pandas, NumPy
 - **Data Visualization**: Plotly
@@ -27,7 +27,7 @@ This project implements a financial forecasting model using Long Short-Term Memo
 1. Clone the repository:
 ```bash
 git clone https://github.com/JeremyOmwenga/Financial-forecast.git
-cd financial-forecast
+cd Financial-forecast
 ```
 
 2. Create and activate a virtual environment:

@@ -1,55 +1,12 @@
 import streamlit as st
-from pathlib import Path
-import streamlit as st
-import streamlit_authenticator as stauth
-import pickle 
 
-names = ["Administrator", "Jeremy Omwenga"]
-emails = ["", ""]
-usernames = ["", ""]
+st.set_page_config(page_title="Stock Forecast", layout="wide")
 
-# Load hashed passwords
-file_path = Path(__file__).parent / "hashed_pw.pkl"
+pages = [
+    st.Page("stock_predict.py", title="Stock Forecast", icon=":material/trending_up:", default=True),
+    st.Page("stock_dashboard.py", title="Portfolio & Savings", icon=":material/account_balance_wallet:"),
+    st.Page("stock_details.py", title="Stock Details", icon=":material/insights:"),
+    st.Page("dash_indicator.py", title="Real-Time Dashboard", icon=":material/monitoring:"),
+]
 
-with file_path.open("rb") as file:
-    hashed_passwords = pickle.load(file)
-
-credentials = {"usernames":{}}
-
-for un, mail, name, pw in zip(usernames, emails, names, hashed_passwords):
-    user_dict = {"name":name, "mail":mail, "password":pw}
-    credentials["usernames"].update({un:user_dict})
-
-
-authenticator = stauth.Authenticate(credentials,"dashboard_module", "abcdef", cookie_expiry_days=1)
-
-name, authentication_status, username = authenticator.login('sidebar', fields = {'Form name': 'Login','Email': 'Email'})
-
-st.header("Welcome to Stock Forecast")
-
-
-
-
-
-if authentication_status == False:
-    st.error("Username/password is incorrect")
-
-##if authentication_status == None:
-    ##st.warning("Please enter your username and password")
-
-if authentication_status:
-
-	
-
-	authenticator.logout("Log Out", "main")
-
-	st.title(f"Welcome, {name}")
-
-	about_page = st.Page(
-	page = "pages/navigation.py",
-	title = "About Stock Price Prediction",
-	icon = ":material/account_circle:",
-	default = True,
-	)
-
-	
+st.navigation(pages).run()
