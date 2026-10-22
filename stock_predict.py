@@ -1,83 +1,82 @@
+from pathlib import Path
+
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import streamlit as st
 import yfinance as yf
 from keras.models import load_model
-import streamlit as st
-import matplotlib.pyplot as plt
-from sklearn.preprocessing import MinMaxScaler 
+from sklearn.preprocessing import MinMaxScaler
+
+MODEL_PATH = Path(__file__).parent / "Stock Predictions Model.keras"
+WINDOW = 100  # days of history the model looks at per prediction
 
 
-model = load_model('')
+@st.cache_resource
+def get_model():
+    return load_model(MODEL_PATH)
 
-st.header('Stock Price Predictor')
 
-stock = st.text_input('Enter Stock Symbol', 'GOOG')
-start = '2012-01-01'
-end = '2022-12-31'
+@st.cache_data
+def get_prices(symbol, start, end):
+    return yf.download(symbol, start=start, end=end, multi_level_index=False, progress=False)
 
-data = yf.download(stock, start, end)
 
-st.subheader('Stock Data')
+st.header("Stock Price Predictor")
+
+stock = st.text_input("Enter Stock Symbol", "GOOG")
+start = "2012-01-01"
+end = "2022-12-31"
+
+data = get_prices(stock, start, end)
+if data is None or data.empty:
+    st.warning(f"No price data found for '{stock}'.")
+    st.stop()
+
+st.subheader("Stock Data")
 st.write(data)
 
-data_train = pd.DataFrame(data.Close[0: int(len(data)*0.8)])
-data_test = pd.DataFrame(data.Close[int(len(data)*0.8): len(data)])
+split = int(len(data) * 0.8)
+data_train = pd.DataFrame(data.Close[:split])
+data_test = pd.DataFrame(data.Close[split:])
 
-
-scaler = MinMaxScaler(feature_range = (0,1))
-
-pas_100_days = data_train.tail(100)
-data_test = pd.concat([pas_100_days, data_test], ignore_index = True)
+# Prepend the last WINDOW training days so the first test prediction has full history
+data_test = pd.concat([data_train.tail(WINDOW), data_test], ignore_index=True)
+scaler = MinMaxScaler(feature_range=(0, 1))
 data_test_scale = scaler.fit_transform(data_test)
 
-st.subheader('Moving Average - 50D')
 ma_50_days = data.Close.rolling(50).mean()
-fig1 = plt.figure(figsize = (10,8))
-plt.plot(ma_50_days, 'r')
-plt.plot(data.Close, 'g')
-plt.show()
-st.pyplot(fig1)
-
-st.subheader('Price vs Moving Average - 50D vs Moving Average - 100D')
 ma_100_days = data.Close.rolling(100).mean()
-fig2 = plt.figure(figsize = (10,8))
-plt.plot(ma_50_days, 'r')
-plt.plot(ma_100_days, 'b')
-plt.plot(data.Close, 'g')
-plt.show()
-st.pyplot(fig2)
-
-st.subheader('Price vs Moving Average - 100D vs Moving Average - 200D')
 ma_200_days = data.Close.rolling(200).mean()
-fig3 = plt.figure(figsize = (10,8))
-plt.plot(ma_100_days, 'r')
-plt.plot(ma_200_days, 'b')
-plt.plot(data.Close, 'g')
-plt.show()
-st.pyplot(fig3)
 
-x = []
-y = []
 
-for i in range(100, data_test_scale.shape[0]):
-    x.append(data_test_scale[i-100:i])
-    y.append(data_test_scale[i,0])
+def plot_lines(*series):
+    fig = plt.figure(figsize=(10, 8))
+    for values, color in series:
+        plt.plot(values, color)
+    st.pyplot(fig)
 
-x, y = np.array(x), np.array(y)
 
-predict = model.predict(x)
+st.subheader("Moving Average - 50D")
+plot_lines((ma_50_days, "r"), (data.Close, "g"))
 
-scale = 1/scaler.scale_
+st.subheader("Price vs Moving Average - 50D vs Moving Average - 100D")
+plot_lines((ma_50_days, "r"), (ma_100_days, "b"), (data.Close, "g"))
 
-predict = predict * scale
+st.subheader("Price vs Moving Average - 100D vs Moving Average - 200D")
+plot_lines((ma_100_days, "r"), (ma_200_days, "b"), (data.Close, "g"))
 
-y = y * scale
+x = np.array([data_test_scale[i - WINDOW:i] for i in range(WINDOW, data_test_scale.shape[0])])
+y = data_test_scale[WINDOW:, 0]
 
-st.subheader('Original Price vs Predicted Price')
-fig4 = plt.figure(figsize = (10,8))
-plt.plot(predict, 'r', label = 'Original Price')
-plt.plot(y, 'g', label = 'Predicted Price')
-plt.xlabel('Time')
-plt.ylabel('Price')
-plt.show()
+predict = scaler.inverse_transform(get_model().predict(x))
+actual = scaler.inverse_transform(y.reshape(-1, 1))
+
+st.subheader("Original Price vs Predicted Price")
+fig4 = plt.figure(figsize=(10, 8))
+plt.plot(actual, "g", label="Original Price")
+plt.plot(predict, "r", label="Predicted Price")
+plt.xlabel("Time")
+plt.ylabel("Price")
+plt.legend()
 st.pyplot(fig4)
